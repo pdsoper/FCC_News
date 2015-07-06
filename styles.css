@@ -41,6 +41,13 @@ body {
 	margin: auto;
 }
 
+/* clearfix */
+.grid:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
 .grid-item {
 	float: left;
 	width: 19%;

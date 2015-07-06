@@ -9,7 +9,8 @@ $(document).ready(function() {
     $grid.masonry('layout');
   });
  
-  getNews();
+  colorDivs();
+  // getNews();
 
   function colorDivs() {
     for (var i = 1; i <= 12; i++) {
@@ -17,6 +18,8 @@ $(document).ready(function() {
       var color = randomColor();
       $(div).css("background-color", color);
       $(div).css("color", bw(color));
+      $(div).css("text-align", "center");
+      $(div).css("font-weight", "bold");
     };
   }
 
@@ -24,56 +27,33 @@ $(document).ready(function() {
       var letters = "0123456789ABCDEF".split("");
       var color = "#";
       for (var i = 0; i < 6; i++) {
-        color += letters[Math.round(Math.random() * 15)];
+        color += letters[Math.floor(Math.random() * 16)];
       }
       return color;
   }
 
-  function hexToDec(hexStr) {
-    if (hexStr[0] === '#') {
-      return parseInt(hexStr.slice(1), 16);
-    } else {
-      return parseInt(hexStr, 16);
-    }
-  }
-
-  function decToHex(dec) {
-    return Number(dec).toString(16);
-  }
-
-  function repeatStr(str,n) {
-    var ans = "";
-    for (var i = 0; i < n; i++) {
-      ans += str;
-    };
-    return ans;
-  }
-
-  function compColor(color) {
-    var comp = decToHex(hexToDec("ffffff") - hexToDec(color));
-    return "#" + repeatStr('0', 6 - comp.length) + comp;
-  }
-
   function bw(color) {
-    if (hexToDec(color) < hexToDec("888888")) {
+    // Return "black" or "white", whichever has greater contrast
+    if (color.length < 6 || color.length > 7) {
+      console.log("Illegal color value for function bw: " + color);
+      return;
+    }
+    if (color.length === 7) {
+      color = color.slice(1)
+    }
+    var r = color.slice(0,2);
+    var g = color.slice(2,4);
+    var b = color.slice(4,6);
+    var mean = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16)) / 3.0;
+    if (mean < 128) {
       return "white";
     } else {
       return "black";
     }
   }
 
-  function randomRgba() {
-    var r = Math.floor(256 * Math.random());
-    var g = Math.floor(256 * Math.random());
-    var b = Math.floor(256 * Math.random());
-    var a = Math.random();
-    return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
-  }
-
   function capitalize(str) {
-    if (str.length === 0) {
-      return str;
-    } else if (str.length === 1) {
+    if (str.length <= 1) {
       return str.toUpperCase();
     } else {
       return str[0].toUpperCase() + str.slice(1).toLowerCase();
@@ -108,11 +88,6 @@ $(document).ready(function() {
     });
   }
 
-  function round(num, decimals) {
-    var factor = Math.pow(10, decimals);
-    return Math.round(factor * num) / factor; 
-  }
-
   function writeDiv(obj) {
     console.log(obj);
     var divStr = '<div class="grid-item">\n';
@@ -136,17 +111,12 @@ $(document).ready(function() {
     return divStr;
   }
 
-  function writePage(data) {
-    data.forEach(function(a) {
-      writeDiv(a);
-    })
-  }
-
-  function writeData(ipData, wData) {
-  }
- 
   function makeJSONTable(obj, heading) {
-    // This creates a nested table of JSON data 
+    /* This creates a nested table of JSON data. Use Bootstrap, if available. 
+    If not, use css :
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid black; }
+    */
     var tableBody = "";
     if (heading !== undefined) {
       tableBody += '<h4>' + heading + '</h4>';
