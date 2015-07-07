@@ -42,9 +42,10 @@ body {
   clear: both;
 }
 */
+
 .grid-item {
 	float: left;
-	width: 19%;
+	width: 200px;
 	background-color: white;
 	margin-top: 10px;
 	font-family: Arial, Helvetica, sans-serif;

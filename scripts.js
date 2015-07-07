@@ -50,7 +50,7 @@ At least that is the case with masonry initialization in html
         $('.grid').masonry({
           itemSelector: '.grid-item',
           columnWidth: 200,
-          gutter: 20
+          gutter: 10,
         });
       });
     })
