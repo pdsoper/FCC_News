@@ -1,26 +1,117 @@
+// scripts.js for freeCodeCamp "Zipline" exercise
+
 $(document).ready(function() {
 
-  var $grid = $('.grid').masonry({
-    itemSelector: '.grid-item',
-    columnWidth: 200
-  });
-
-  $grid.imagesLoaded().progress(function() {
-    $grid.masonry('layout');
-  });
+/* If we use createDivs here, masonry works - layout and spacing are correct
+At least that is the case with masonry initialization in html
+    <div class="grid js-masonry" 
+      data-masonry-options='{ "itemSelector": ".grid-item", 
+      "columWidth": 200, 
+      "gutter": 10 }'>    </div>
+    With neither html nor any other intializattionn, masonry does not work - no
+    surprise there
+    !! The initialization that works in the masonry demo (local copy) 
+       does not work here.
+*/
+  //createDivs(1,10);
  
-  colorDivs();
-  // getNews();
+  getNews();
 
-  function colorDivs() {
-    for (var i = 1; i <= 12; i++) {
-      var div = ".div" + i;
+  function createDivs(start, end) {
+    for (var i = start; i <= end; i++) {
+      var divId = "div" + i;
+      var div = '<div class="grid-item" id="' + divId + '"><p>' + i + '</p></div>';
+      $('.grid').append(div);
+      $('.grid').masonry('append', div);
+      divId = "#" + divId;
       var color = randomColor();
-      $(div).css("background-color", color);
-      $(div).css("color", bw(color));
-      $(div).css("text-align", "center");
-      $(div).css("font-weight", "bold");
+      $(divId).css("background-color", color);
+      $(divId).css("color", bw(color));
+      $(divId).css("height", randomInRange(100,400));
+      $(divId).css("text-align", "center");
+      $(divId).css("font-weight", "bold");
     };
+  }
+
+  function getNews() {
+    $.ajax({
+        url: "http://www.freecodecamp.com/stories/hotStories",
+        type: "GET",
+    })
+    .done(function(data, textStatus, jqXHR) {
+      console.log("HTTP Request Succeeded: " + jqXHR.status);
+      // console.log(data);
+      // $('#news-table').append(makeJSONTable(data, "Results of FCC news query"));
+      var divStr = data
+      .map(function(a) { return writeDiv(a); })
+      .reduce(function(a,b) { return a + b; });
+      $('.grid').append(divStr);
+      $('.grid').imagesLoaded(function() {
+        $('.grid').masonry({
+          itemSelector: '.grid-item',
+          columnWidth: 200,
+          gutter: 20
+        });
+      });
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+      console.log("HTTP Request Failed");
+      console.log(jqXHR);
+      console.log(errorThrown);
+    })
+    .always(function() {
+      //data|jqXHR, textStatus, jqXHR|errorThrown
+    });
+  }
+
+  function writeDiv(obj) {
+    // console.log(obj);
+    var divStr = '<div class="grid-item">\n';
+    var image = obj.image;
+    if (image.length === 0) {
+      image = obj.author.picture;
+    }
+    if (image.length === 0) {
+      image = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Pessoa_Neutra.svg/240px-Pessoa_Neutra.svg.png";
+    }
+    divStr += '<img src="' + image + '" />\n';
+    divStr += '<p class="headline">' + titleCase(obj.headline) + '</p>\n';
+    divStr += '<p class="comments">' + obj.comments.length + ' comments' + '</p>\n';
+    divStr += '<p class="author">' + obj.author.username + '</p>\n';
+    divStr += '</div>\n';
+    // console.log(divStr);
+    return divStr;
+  }
+
+  function makeJSONTable(obj, heading) {
+    // This creates a nested table of JSON data. Use Bootstrap, if available.  If not, use css
+    var bootstrap_enabled = (typeof $().modal == 'function');
+    if (!bootstrap_enabled) {
+      $('table').css("border-collapse", "collapse");
+      $('th, td').css("border", "1px solid black");
+    }
+    var tableBody = "";
+    if (heading !== undefined) {
+      tableBody += '<h4>' + heading + '</h4>';
+    }
+    tableBody += '<table class="table table-striped table-bordered">\n';
+    $.each(obj, function(k, v) {
+      tableBody += "<tr><td>" + k + "</td><td>";
+      if (typeof v !== "object") {
+        tableBody += v;
+      } else {
+        tableBody += makeJSONTable(v);
+      }
+    });
+    tableBody += '</td></tr></table>';
+    return tableBody; 
+  }
+ 
+   function randomInRange(min, max) {
+    // Return an integer value in the range min <= value <= max
+    min = Math.round(min);
+    max = Math.round(max);
+    return Math.floor(min + Math.random() * (max - min + 1));
   }
 
   function randomColor() {
@@ -64,74 +155,4 @@ $(document).ready(function() {
     return str.split(' ').map(function(a) { return capitalize(a); }).join(' ');
   }
 
-  function getNews() {
-    $.ajax({
-        url: "http://www.freecodecamp.com/stories/hotStories",
-        type: "GET",
-    })
-    .done(function(data, textStatus, jqXHR) {
-      console.log("HTTP Request Succeeded: " + jqXHR.status);
-      // console.log(data);
-      // $('#news').append(makeJSONTable(data, "Results of FCC news query"));
-      var divStr = data
-      .map(function(a) { return writeDiv(a); })
-      .reduce(function(a,b) { return a + b; });
-      $('.grid').append(divStr);
-    })
-    .fail(function(jqXHR, textStatus, errorThrown) {
-      console.log("HTTP Request Failed");
-      console.log(jqXHR);
-      console.log(errorThrown);
-    })
-    .always(function() {
-      //data|jqXHR, textStatus, jqXHR|errorThrown
-    });
-  }
-
-  function writeDiv(obj) {
-    console.log(obj);
-    var divStr = '<div class="grid-item">\n';
-    var image = obj.image;
-    if (image.length === 0) {
-      image = obj.author.picture;
-    }
-    if (image.length === 0) {
-      image = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Pessoa_Neutra.svg/240px-Pessoa_Neutra.svg.png";
-    }
-    console.log("image", image);
-    console.log("headline", obj.headline);
-    console.log("comments", obj.comments);
-    console.log("username", obj.author.username);
-    divStr += '<img src="' + image + '" />\n';
-    divStr += '<p class="headline">' + titleCase(obj.headline) + '</p>\n';
-    divStr += '<p class="comments">' + obj.comments.length + ' comments' + '</p>\n';
-    divStr += '<p class="author">' + obj.author.username + '</p>\n';
-    divStr += '</div>';
-    console.log(divStr);
-    return divStr;
-  }
-
-  function makeJSONTable(obj, heading) {
-    /* This creates a nested table of JSON data. Use Bootstrap, if available. 
-    If not, use css :
-    table { border-collapse: collapse; }
-    th, td { border: 1px solid black; }
-    */
-    var tableBody = "";
-    if (heading !== undefined) {
-      tableBody += '<h4>' + heading + '</h4>';
-    }
-    tableBody += '<table class="table table-striped table-bordered">\n';
-    $.each(obj, function(k, v) {
-      tableBody += "<tr><td>" + k + "</td><td>";
-      if (typeof v !== "object") {
-        tableBody += v;
-      } else {
-        tableBody += makeJSONTable(v);
-      }
-    });
-    tableBody += '</td></tr></table>';
-    return tableBody; 
-  }
- 
 }); 
