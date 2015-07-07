@@ -33,6 +33,19 @@ At least that is the case with masonry initialization in html
     };
   }
 
+  $( window ).resize(centerGrid());
+
+  function centerGrid() {
+    var gw = Math.round($('.grid').width());
+    var cw = Math.round($('.grid-item').width());
+    var gutter = 10;
+    var colCount = Math.floor(gw / cw);
+    var used = gw - cw * colCount + gutter * (colCount - 1)
+    var offset = Math.floor(used / 2);
+    // console.log(gw, cw, gutter, colCount, used, offset);
+    $('.grid').css("left", offset);
+  };
+
   function getNews() {
     $.ajax({
         url: "http://www.freecodecamp.com/stories/hotStories",
@@ -52,6 +65,7 @@ At least that is the case with masonry initialization in html
           columnWidth: 200,
           gutter: 10,
         });
+        centerGrid();
       });
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
