@@ -36,14 +36,6 @@ body {
 	margin: auto;
 }
 
-/* clearfix is not needed since there is nothing after the grid div
-.grid:after {
-  content: '';
-  display: block;
-  clear: both;
-}
-*/
-
 .grid-item {
 	float: left;
 	width: 200px;
