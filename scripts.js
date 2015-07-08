@@ -41,11 +41,14 @@ $(document).ready(function() {
     });
   }
 
+  $('.comments').click(function() {
+    var id = $(this).id();
+    alert(id);
+  });
+
   function writeDiv(obj) {
-    console.log(obj);
     var divStr = "";
     var discussion = 'http://www.freecodecamp.com/news/' + obj.storyLink.replace(/\s+/g, '-');
-    console.log(discussion);
     var image = obj.image;
     if (image.length === 0) {
       image = obj.author.picture;
@@ -53,18 +56,22 @@ $(document).ready(function() {
     if (image.length === 0) {
       image = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Pessoa_Neutra.svg/240px-Pessoa_Neutra.svg.png";
     }
-    divStr += '<a href="' + obj.link + '" target="_blank">'
     divStr += '<div class="grid-item">\n';
-    divStr += '  <div class="img-div">';
-    divStr += '    <img src="' + image + '" />\n';
+    divStr += '  <a href="' + obj.link + '" target="_blank">\n';
+    divStr += '  <div class="top-div">\n';
+    divStr += '    <div class="img-div">\n';
+    divStr += '      <img src="' + image + '" />\n';
+    divStr += '    </div>\n';
+    divStr += '    <p class="headline">' + titleCase(obj.headline) + '</p>\n';
     divStr += '  </div>\n';
-    divStr += '  <p class="headline">' + titleCase(obj.headline) + '</p>\n';
-//    divStr += '  <a href="' + discussion +'">';
-    divStr += '  <p class="comments">' + obj.comments.length + ' comments' + '</p>\n';
-//    divStr += '  </a>';
-    divStr += '  <p class="author">' + obj.author.username + '</p>\n';
+    divStr += '  </a>\n';
+    divStr += '  <a href="' + discussion + '" target="_blank">\n';
+    divStr += '  <div class="bottom-div" id="' + discussion + '">\n';
+    divStr += '    <p class="comments">' + obj.comments.length + ' comments' + '</p>\n';
+    divStr += '    <p class="author">' + obj.author.username + '</p>\n';
+    divStr += '  </div>\n';
+    divStr += '  </a>\n';
     divStr += '</div>\n';
-    divStr += '</a>';
     return divStr;
   }
 

@@ -10,6 +10,16 @@ body {
 	background-color: #9B8F89;
 }
 
+a:link {
+	color: inherit;
+	text-decoration: none;
+}
+
+a:visited {
+	color: inherit;
+	text-decoration: none;
+}
+
 .title {
 	text-align: center;
 	color: #4B4440;
