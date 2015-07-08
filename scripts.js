@@ -12,6 +12,7 @@ At least that is the case with masonry initialization in html
     surprise there
     !! The initialization that works in the masonry demo (local copy) 
        does not work here.
+    It would be interesting to try this with isotope instead
 */
   //createDivs(1,10);
  
@@ -54,7 +55,7 @@ At least that is the case with masonry initialization in html
     .done(function(data, textStatus, jqXHR) {
       console.log("HTTP Request Succeeded: " + jqXHR.status);
       // console.log(data);
-      // $('#news-table').append(makeJSONTable(data, "Results of FCC news query"));
+      $('#news-table').append(makeJSONTable(data, "Results of FCC news query"));
       var divStr = data
       .map(function(a) { return writeDiv(a); })
       .reduce(function(a,b) { return a + b; });
@@ -80,7 +81,7 @@ At least that is the case with masonry initialization in html
 
   function writeDiv(obj) {
     // console.log(obj);
-    var divStr = '<div class="grid-item">\n';
+    var divStr = "";
     var image = obj.image;
     if (image.length === 0) {
       image = obj.author.picture;
@@ -88,11 +89,14 @@ At least that is the case with masonry initialization in html
     if (image.length === 0) {
       image = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Pessoa_Neutra.svg/240px-Pessoa_Neutra.svg.png";
     }
+    divStr += '<a href="' + obj.link + '" target="_blank">'
+    divStr += '<div class="grid-item">\n';
     divStr += '<img src="' + image + '" />\n';
     divStr += '<p class="headline">' + titleCase(obj.headline) + '</p>\n';
     divStr += '<p class="comments">' + obj.comments.length + ' comments' + '</p>\n';
     divStr += '<p class="author">' + obj.author.username + '</p>\n';
     divStr += '</div>\n';
+    divStr += '</a>';
     // console.log(divStr);
     return divStr;
   }
